@@ -53,7 +53,12 @@ NS_ASSUME_NONNULL_BEGIN
 #endif // TARGET_OS_IOS || TARGET_OS_MACCATALYST
     options->_loginHint = loginHint;
     options->_completion = completion;
-    options->_scopes = [GIDScopes scopesWithBasicProfile:scopes];
+    if (scopes.count == 1 && [@"https://www.googleapis.com/auth/drive.file" isEqualToString:scopes[0]]) {
+        // manus hack: prevent adding the email scope to the drive.file scope
+        options->_scopes = scopes;
+    } else {
+        options->_scopes = [GIDScopes scopesWithBasicProfile:scopes];
+    }
   }
   return options;
 }
